@@ -2,6 +2,7 @@ package com.example.iem.cervo_hivert__iot;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private Button sendHello;
     private MqttAndroidClient client = null;
     private final String topic = "LEDArduino";
+    private static int QOS = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public void initListeners(){
         connexionButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                connect("10.0.2.15", "1883");
+                connect("172.31.246.176", "1896");
             }
         });
 
@@ -63,21 +65,21 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     // Nous sommes connecté
-                    System.out.println("On est connecté !");
-                    //subscribe(topic); // ligne à commenter pour le moment
+                    Log.i("MQTT","On est connecté !");
+                    subscribe(topic); // ligne à commenter pour le moment
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     // Erreur de connexion : temps de connexion trop long ou problème de pare-feu
-                    System.err.println("Echec de connection !");
+                    Log.e("MQTT ","Echec de connection !");
                 }
             });
         } catch (MqttException e) {
             e.printStackTrace();
         }
 
-        //client.setCallback(new MqttCallbackHandler()); // ligne à commenter pour le moment
+        client.setCallback(new MqttCallbackHandler());
     }
 
     public void disconnect() {
@@ -108,10 +110,39 @@ public class MainActivity extends AppCompatActivity {
         message.setPayload(msg.getBytes());
         try {
             client.publish(topic, message);
+            Log.i("MQTT", "Hello envoyé");
         } catch (MqttException e) {
+            e.printStackTrace();
+            Log.e("MQTT","exception");
+        }
+    }
+    public void subscribe(final String topic) {
+        try {
+            IMqttToken subToken = client.subscribe(topic, QOS);
+            subToken.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    // On a bien souscrit au topic
+                    System.out.println("onSuccess subscribe topic " + topic);
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken,
+                                      Throwable exception) {
+                    // La souscription n'a pas pu se faire, peut être que l'utilisateur n'a pas
+                    // l'autorisation de souscrire à ce topic
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        connect("172.31.246.176", "1896");
+    }
 }
