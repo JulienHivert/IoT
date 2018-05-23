@@ -16,10 +16,14 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 public class MainActivity extends AppCompatActivity {
 
     private Button connexionButton;
-    private Button sendHello;
-    private MqttAndroidClient client = null;
+    private Button send1;
+    private Button send2;
     private final String topic = "LEDArduino";
     private static int QOS = 0;
+    private final static  String MQTT_IP = "172.20.10.14";
+    private final static  String MQTT_PORT = "1896";
+    private String clientId;
+    private MqttAndroidClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         initComponents();
         initListeners();
+        iniConnection();
     }
 
     @Override
@@ -38,27 +43,35 @@ public class MainActivity extends AppCompatActivity {
 
     public void initComponents(){
         this.connexionButton = findViewById(R.id.connexionButton);
-        this.sendHello = findViewById(R.id.sendHello);
+        this.send1 = findViewById(R.id.send1);
+        this.send2 = findViewById(R.id.send2);
     }
 
     public void initListeners(){
         connexionButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                connect("172.31.246.176", "1896");
+                connect(MQTT_IP, MQTT_PORT);
             }
         });
 
-        sendHello.setOnClickListener(new View.OnClickListener() {
+        send1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                sendMsg("Hello world");
+                sendMsg("1");
+            }
+        });
+        send2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMsg("2");
             }
         });
     }
 
-    public void connect(String address, String port) {
-        String clientId = MqttClient.generateClientId(); // génère un ID
-        client = new MqttAndroidClient(getApplicationContext(), "tcp://" + address + ":" + port, clientId);
+    public void iniConnection(){
+        this.clientId = MqttClient.generateClientId(); // génère un ID
+        this.client = new MqttAndroidClient(getApplicationContext(), "tcp://" + MQTT_IP + ":" + MQTT_PORT, clientId);
+    }
 
+    public void connect(String address, String port) {
         try {
             IMqttToken token = client.connect(); // on tente de se connecter
             token.setActionCallback(new IMqttActionListener() {
@@ -143,6 +156,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        connect("172.31.246.176", "1896");
+        connect(MQTT_IP, MQTT_PORT);
     }
 }
