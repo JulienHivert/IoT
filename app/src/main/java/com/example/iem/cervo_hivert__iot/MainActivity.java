@@ -1,10 +1,14 @@
 package com.example.iem.cervo_hivert__iot;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -18,12 +22,23 @@ public class MainActivity extends AppCompatActivity {
     private Button connexionButton;
     private Button send1;
     private Button send2;
+    private Button sendRGB;
     private final String topic = "LEDArduino";
     private static int QOS = 0;
     private final static  String MQTT_IP = "172.20.10.14";
     private final static  String MQTT_PORT = "1896";
     private String clientId;
     private MqttAndroidClient client;
+    //Seekbars
+    private SeekBar seekBarR;
+    private SeekBar seekBarG;
+    private SeekBar seekBarB;
+    //Textview linked to seekBars
+    private TextView tvR;
+    private TextView tvG;
+    private TextView tvB;
+
+    private ImageView imgPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initComponents();
-        initListeners();
+        initClickListeners();
+        initSeekbars();
         iniConnection();
     }
 
@@ -45,9 +61,24 @@ public class MainActivity extends AppCompatActivity {
         this.connexionButton = findViewById(R.id.connexionButton);
         this.send1 = findViewById(R.id.send1);
         this.send2 = findViewById(R.id.send2);
+        this.sendRGB = findViewById(R.id.sendRGB);
+        this.seekBarR = findViewById(R.id.seekBarR);
+        this.seekBarG = findViewById(R.id.seekBarG);
+        this.seekBarB = findViewById(R.id.seekBarB);
+
+        this.tvR = findViewById(R.id.dataR);
+        this.tvR.setText("0");
+
+        this.tvG = findViewById(R.id.dataG);
+        this.tvG.setText("0");
+
+        this.tvB = findViewById(R.id.dataB);
+        this.tvB.setText("0");
+
+        this.imgPreview = findViewById(R.id.imageView2);
     }
 
-    public void initListeners(){
+    public void initClickListeners(){
         connexionButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 connect(MQTT_IP, MQTT_PORT);
@@ -64,6 +95,81 @@ public class MainActivity extends AppCompatActivity {
                 sendMsg("2");
             }
         });
+        sendRGB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("MQTT", tvR.getText() + "," + tvG.getText() + "," + tvB.getText());
+                sendMsg(tvR.getText() + "," + tvG.getText() + "," + tvB.getText()+ "%");
+
+            }
+        });
+
+    }
+
+    public void initSeekbars(){
+        seekBarR.setProgress(0);
+        seekBarR.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tvR.setText(String.valueOf(progress));
+                reloadBackground();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //nothing
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //nothing
+            }
+        });
+        seekBarG.setProgress(0);
+        seekBarG.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tvG.setText(String.valueOf(progress));
+                reloadBackground();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //nothing
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //nothing
+            }
+        });
+        seekBarB.setProgress(0);
+        seekBarB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tvB.setText(String.valueOf(progress));
+                reloadBackground();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //nothing
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //nothing
+            }
+        });
+    }
+
+    public void reloadBackground(){
+        int intTVR = Integer.parseInt(tvR.getText().toString());
+        int intTVG = Integer.parseInt(tvG.getText().toString());
+        int intTVB = Integer.parseInt(tvB.getText().toString());
+        String hex = String.format("#%02x%02x%02x", intTVR, intTVG, intTVB);
+        Color color = new Color();
+        this.imgPreview.setBackgroundColor(color.parseColor(hex));
     }
 
     public void iniConnection(){
@@ -89,9 +195,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         } catch (MqttException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
-
         client.setCallback(new MqttCallbackHandler());
     }
 
@@ -110,11 +215,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(IMqttToken asyncActionToken,
                                       Throwable exception) {
-                    // Quelque chose c'est mal passé, mais on est probablement déconnecté malgré tout
+                    Log.e("MQTT","exception");
                 }
             });
         } catch (MqttException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
@@ -123,9 +228,8 @@ public class MainActivity extends AppCompatActivity {
         message.setPayload(msg.getBytes());
         try {
             client.publish(topic, message);
-            Log.i("MQTT", "Hello envoyé");
+            Log.i("MQTT", msg + " envoyé");
         } catch (MqttException e) {
-            e.printStackTrace();
             Log.e("MQTT","exception");
         }
     }
@@ -142,14 +246,16 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(IMqttToken asyncActionToken,
                                       Throwable exception) {
+                    Log.d("INFO", "Erreur de souscription au topic ..");
                     // La souscription n'a pas pu se faire, peut être que l'utilisateur n'a pas
                     // l'autorisation de souscrire à ce topic
                 }
             });
         } catch (MqttException e) {
-            e.printStackTrace();
+            Log.d("MQTT", "Erreur de connexion ..");
+//            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("MQTT","exception");
         }
     }
 

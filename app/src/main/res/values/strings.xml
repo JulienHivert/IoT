@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Cervo_Hivert__IoT</string>
+    <string name="send_2">Send 2</string>
+    <string name="connexion_mqtt">Connexion MQTT</string>
+    <string name="send_rgb">Send RGB</string>
+    <string name="todo">TODO</string>
+    <string name="send_1">Send 1</string>
 </resources>

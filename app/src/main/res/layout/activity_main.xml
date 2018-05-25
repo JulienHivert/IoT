@@ -1,49 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/connexionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Connexion MQTT"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/seekBarR"
+        android:layout_marginTop="21dp"
+        android:text="@string/connexion_mqtt" />
+
+    <Button
+        android:id="@+id/sendRGB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="62dp"
+        android:layout_marginStart="32dp"
+        android:text="@string/send_rgb" />
 
     <Button
         android:id="@+id/send2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="160dp"
-        android:text="Send 2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/send1"
+        android:layout_marginEnd="124dp"
+        android:text="@string/send_2" />
 
     <Button
         android:id="@+id/send1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="97dp"
-        android:text="Send 1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/sendRGB"
+        android:layout_marginTop="86dp"
+        android:text="@string/send_1" />
 
-</android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/todo" />
+
+    <SeekBar
+        android:id="@+id/seekBarR"
+        android:layout_width="254dp"
+        android:max="255"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="228dp" />
+
+    <SeekBar
+        android:id="@+id/seekBarG"
+        android:layout_width="253dp"
+        android:max="255"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="221dp" />
+
+    <SeekBar
+        android:id="@+id/seekBarB"
+        android:layout_width="253dp"
+        android:max="255"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="173dp" />
+
+    <TextView
+        android:id="@+id/dataR"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="44dp"
+        android:layout_marginTop="221dp"
+        android:max="255" />
+
+    <TextView
+        android:id="@+id/dataG"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/dataR"
+        android:layout_marginBottom="212dp" />
+
+    <TextView
+        android:id="@+id/dataB"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/dataR"
+        android:layout_marginBottom="162dp" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="93dp"
+        android:layout_height="85dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="43dp"
+        android:layout_marginEnd="67dp"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/seekBarG"
+        android:layout_marginEnd="-32dp"
+        android:layout_toStartOf="@+id/sendRGB"
+        android:text="G" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/seekBarB"
+        android:layout_marginEnd="-32dp"
+        android:layout_toStartOf="@+id/sendRGB"
+        android:text="B" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/seekBarR"
+        android:layout_marginEnd="-32dp"
+        android:layout_toStartOf="@+id/sendRGB"
+        android:text="R" />
+
+
+</RelativeLayout>
